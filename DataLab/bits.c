@@ -152,7 +152,7 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-/* right shift in order to avoid boring arithmatic shift and using bit and. */
+/* right shift in order to avoid boring arithmatic shift and try to get specific byte using bitAnd and mask. */
 	return ((x >> (n << 3)) & 0xFF);		
 }
 /* 
@@ -164,7 +164,7 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-/* try to implement logical right shift by mask and logical left shift */
+/* try to implement logical right shift by mask and logical right shift */
 	int mask = ((~0) << (31 + (~n + 1))) << 1;
 	return (x >> n) & (~mask);	
 }
@@ -193,6 +193,7 @@ int bitCount(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
+/* for x != 0, the highest bit of x | (-x) will always become 1 while when x == 0, the result is the opposite */
 	return (~((x | (~x + 1)) >> 31) & 1);
 }
 /* 
@@ -202,6 +203,7 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
+	/* TMin = 10000.... */
 	return (1 << 31);
 }
 /* 
@@ -214,7 +216,10 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return !((x >> (n + (~1) + 1)) ^ (((1 << 31) & x) >> 31));
+/* if fitsBits then from highest bit to n bit will all become 1 - negative number or 0 - positive number
+ * then can construct a mask to implement fitsBits with the help of ^ and !
+ */
+	return !((x >> (n + (~1) + 1)) ^ (((1 << 31) & x) >> 31));
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -225,6 +230,7 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
+/* add bias when x is negative, which is controlled by a sign-related mask */
 	int mask = x >> 31;
 	int add = ((1 << n) + (~1) + 1) & mask;
 	return (x + add) >> n;
@@ -237,7 +243,8 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return ~x + 1;
+/* -x = (~x) + 1 */
+	return ~x + 1;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
@@ -247,6 +254,7 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
+/* ensure the highest bit is 0 and x != 0 */
 	return (!(x >> 31)) ^ (!(x ^ 0));
 }
 /* 
@@ -257,6 +265,7 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
+/* different processing ways when x and y have the same signs or different signs */
 	int diff = y + (~x) + 1;
 	int not_diff_sign = !(diff >> 31);
 	int mask = !((x ^ y) >> 31);
@@ -292,6 +301,7 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
+/* m_flag - if m != 0 e_flag - if e == 0xff */
 	unsigned m_flag = 0x007fffff & uf;
 	unsigned e_flag = !(0x7f800000 & (~uf));
 	if (e_flag && m_flag) {
@@ -310,38 +320,7 @@ unsigned float_neg(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-	/*
-	unsigned count = 31;
-	unsigned mask = 0x80000000;
-	unsigned m;
-	unsigned e;
-	unsigned s;
-	unsigned c = 0;
-	if (x ^ 0) {
-		s = x & 0x80000000;	
-		if (x & 0x80000000) {
-			x = (~x) + 1;
-		}	
-		while (!(mask & x) && count) {
-			count = count + (~1) + 1;
-			mask = mask >> 1;
-		}
-		e = (127 + count) << 23;
-		m = 23 + (~count) + 1;
-		if (m & 0x80000000) {
-			m = x >> (~m);
-			if ((m & 1) ^ 0) {
-				c = 1;
-			}
-			m = m >> 1;
-		} else {
-			m = x << m;
-		}
-		return s + e + (m & 0x007fffff) + c;
-	} else {
-		return 0;
-	}
-	*/
+/* 1.process 0 individually 2.process negative number and store the sign 3.get the e number 4.get the m number and round it 5.construct the result */
 	unsigned count = 0;
 	unsigned mask = 0x80000000;
 	unsigned sign = x & mask;
@@ -376,6 +355,7 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 unsigned float_twice(unsigned uf) {
+/* denormailized number - m = m << 1 normalized number - e = e + 1 */
 	unsigned result = uf;
 	if ((uf & 0x7f800000) == 0) {
 		result = ((uf & 0x007fffff) << 1) | (uf & 0x80000000);
