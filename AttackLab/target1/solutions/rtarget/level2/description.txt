@@ -1,4 +1,0 @@
-uses setval_426 and getval_280
-     mov %rax, %rdi pop %rax
-uses above to set %rdi
-and then redirects the program to touch2

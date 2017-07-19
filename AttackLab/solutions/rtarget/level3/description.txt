@@ -1,0 +1,7 @@
+save %rax to %rdi
+pop a const to %rax and then save it to %rsi
+use add_xy to add %rsi and %rdi to %rax
+now %rax points to the address of the string
+save %rax to %rdi
+call touch3
+
