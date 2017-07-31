@@ -10,4 +10,6 @@ This is my solutions for labs from CSAPP.
 * 2017-05-09 Completed report for attack lab.
 * 2017-05-10 Finished buffer lab.
 * 2017-05-16 Updated buffer lab and completed report.
-* 2017-07-08 Finished part a of cache lab.
+* 2017-07-08 Finished part A of cache lab.
+* 2017-07-20 Finished performance lab.
+* 2017-08-01 Finished shell lab.
