@@ -8,7 +8,7 @@ echo -e "\n" >> tsh.out
 
 for trace_file in ./*.txt
 do
-    echo -e "`./sdriver.pl -t $trace_file -s ./tshref -a "-p"`" >> tsh.out
+    echo -e "`./sdriver.pl -t $trace_file -s ./tsh -a "-p"`" >> tsh.out
 done
 
 echo -e "\n" >> tsh.out

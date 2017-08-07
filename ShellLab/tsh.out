@@ -15,134 +15,138 @@ tsh> quit
 # trace04.txt - Run a background job.
 #
 tsh> ./myspin 1 &
-[1] (10360) ./myspin 1 &
+[1] (10622) ./myspin 1 &
 #
 # trace05.txt - Process jobs builtin command.
 #
 tsh> ./myspin 2 &
-[1] (10364) ./myspin 2 &
+[1] (10626) ./myspin 2 &
 tsh> ./myspin 3 &
-[2] (10366) ./myspin 3 &
+[2] (10628) ./myspin 3 &
 tsh> jobs
-[1] (10364) Running ./myspin 2 &
-[2] (10366) Running ./myspin 3 &
+[1] (10626) Running ./myspin 2 &
+[2] (10628) Running ./myspin 3 &
 #
 # trace06.txt - Forward SIGINT to foreground job.
 #
 tsh> ./myspin 4
-Job [1] (10371) terminated by signal 2
+Job [1] (10642) terminated by signal 2
 #
 # trace07.txt - Forward SIGINT only to foreground job.
 #
 tsh> ./myspin 4 &
-[1] (10375) ./myspin 4 &
+[1] (10646) ./myspin 4 &
 tsh> ./myspin 5
-Job [2] (10377) terminated by signal 2
+Job [2] (10648) terminated by signal 2
 tsh> jobs
-[1] (10375) Running ./myspin 4 &
+[1] (10646) Running ./myspin 4 &
 #
 # trace08.txt - Forward SIGTSTP only to foreground job.
 #
 tsh> ./myspin 4 &
-[1] (10385) ./myspin 4 &
+[1] (10653) ./myspin 4 &
 tsh> ./myspin 5
-Job [2] (10387) stopped by signal 20
+Job [2] (10655) stopped by signal 20
 tsh> jobs
-[1] (10385) Running ./myspin 4 &
-[2] (10387) Stopped ./myspin 5 
+[1] (10653) Running ./myspin 4 &
+[2] (10655) Stopped ./myspin 5 
 #
 # trace09.txt - Process bg builtin command
 #
 tsh> ./myspin 4 &
-[1] (10394) ./myspin 4 &
+[1] (10660) ./myspin 4 &
 tsh> ./myspin 5
-Job [2] (10396) stopped by signal 20
+Job [2] (10662) stopped by signal 20
 tsh> jobs
-[1] (10394) Running ./myspin 4 &
-[2] (10396) Stopped ./myspin 5 
+[1] (10660) Running ./myspin 4 &
+[2] (10662) Stopped ./myspin 5 
 tsh> bg %2
-[2] (10396) ./myspin 5 
+[2] (10662) ./myspin 5 
 tsh> jobs
-[1] (10394) Running ./myspin 4 &
-[2] (10396) Running ./myspin 5 
+[1] (10660) Running ./myspin 4 &
+[2] (10662) Running ./myspin 5 
 #
 # trace10.txt - Process fg builtin command. 
 #
 tsh> ./myspin 4 &
-[1] (10404) ./myspin 4 &
+[1] (10677) ./myspin 4 &
 tsh> fg %1
-Job [1] (10404) stopped by signal 20
+Job [1] (10677) stopped by signal 20
 tsh> jobs
-[1] (10404) Stopped ./myspin 4 &
+[1] (10677) Stopped ./myspin 4 &
 tsh> fg %1
 tsh> jobs
 #
 # trace11.txt - Forward SIGINT to every process in foreground process group
 #
 tsh> ./mysplit 4
-Job [1] (10412) terminated by signal 2
+Job [1] (10715) terminated by signal 2
 tsh> /bin/ps a
   PID TTY      STAT   TIME COMMAND
-  411 tty1     Ssl+   3:43 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{506fe542-2ac0-4c1b-99d8-174986c6230c} -background none -noreset -displayfd 18 vt1
- 1400 pts/0    Ss     0:02 fish
- 3695 pts/1    Ss+    0:00 fish
-10349 pts/0    S+     0:00 bash ./gather_output.sh
-10409 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace11.txt -s ./tshref -a -p
-10410 pts/0    S+     0:00 ./tshref -p
-10415 pts/0    R      0:00 /bin/ps a
+  407 tty1     Ssl+   3:47 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{ef9bc4af-5a18-431a-beb4-2b7e959a6886} -background none -noreset -displayfd 18 vt1
+ 4934 pts/0    Ss     0:01 fish
+10611 pts/0    S+     0:00 bash ./gather_output.sh
+10691 pts/1    Ss+    0:00 fish
+10712 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace11.txt -s ./tsh -a -p
+10713 pts/0    S+     0:00 ./tsh -p
+10729 pts/0    R      0:00 /bin/ps a
 #
 # trace12.txt - Forward SIGTSTP to every process in foreground process group
 #
 tsh> ./mysplit 4
-Job [1] (10419) stopped by signal 20
+Job [1] (10734) stopped by signal 20
 tsh> jobs
-[1] (10419) Stopped ./mysplit 4 
+[1] (10734) Stopped ./mysplit 4 
 tsh> /bin/ps a
   PID TTY      STAT   TIME COMMAND
-  411 tty1     Ssl+   3:43 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{506fe542-2ac0-4c1b-99d8-174986c6230c} -background none -noreset -displayfd 18 vt1
- 1400 pts/0    Ss     0:02 fish
- 3695 pts/1    Ss+    0:00 fish
-10349 pts/0    S+     0:00 bash ./gather_output.sh
-10416 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace12.txt -s ./tshref -a -p
-10417 pts/0    S+     0:00 ./tshref -p
-10419 pts/0    T      0:00 ./mysplit 4
-10420 pts/0    T      0:00 ./mysplit 4
-10423 pts/0    R      0:00 /bin/ps a
+  407 tty1     Ssl+   3:47 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{ef9bc4af-5a18-431a-beb4-2b7e959a6886} -background none -noreset -displayfd 18 vt1
+ 4934 pts/0    Ss     0:01 fish
+10611 pts/0    S+     0:00 bash ./gather_output.sh
+10691 pts/1    Ss+    0:00 fish
+10730 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace12.txt -s ./tsh -a -p
+10731 pts/0    S+     0:00 ./tsh -p
+10734 pts/0    T      0:00 ./mysplit 4
+10735 pts/0    T      0:00 ./mysplit 4
+10749 pts/0    R      0:00 /bin/ps a
 #
 # trace13.txt - Restart every stopped process in process group
 #
 tsh> ./mysplit 4
-Job [1] (10427) stopped by signal 20
+Job [1] (10753) stopped by signal 20
 tsh> jobs
-[1] (10427) Stopped ./mysplit 4 
+[1] (10753) Stopped ./mysplit 4 
 tsh> /bin/ps a
   PID TTY      STAT   TIME COMMAND
-  411 tty1     Ssl+   3:43 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{506fe542-2ac0-4c1b-99d8-174986c6230c} -background none -noreset -displayfd 18 vt1
- 1400 pts/0    Ss     0:02 fish
- 3695 pts/1    Ss+    0:00 fish
-10349 pts/0    S+     0:00 bash ./gather_output.sh
-10424 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace13.txt -s ./tshref -a -p
-10425 pts/0    S+     0:00 ./tshref -p
-10427 pts/0    T      0:00 ./mysplit 4
-10428 pts/0    T      0:00 ./mysplit 4
-10431 pts/0    R      0:00 /bin/ps a
+  407 tty1     Ssl+   3:47 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{ef9bc4af-5a18-431a-beb4-2b7e959a6886} -background none -noreset -displayfd 18 vt1
+ 4934 pts/0    Ss     0:01 fish
+10611 pts/0    S+     0:00 bash ./gather_output.sh
+10691 pts/1    Ss     0:00 fish
+10750 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace13.txt -s ./tsh -a -p
+10751 pts/0    S+     0:00 ./tsh -p
+10753 pts/0    T      0:00 ./mysplit 4
+10754 pts/0    T      0:00 ./mysplit 4
+10756 pts/1    S+     0:00 git clone https://github.com/tangxiangru/shlab
+10757 pts/1    S+     0:00 /usr/lib/git-core/git-remote-https origin https://github.com/tangxiangru/shlab
+10759 pts/1    Sl+    0:00 /usr/lib/git-core/git fetch-pack --stateless-rpc --stdin --lock-pack --thin --check-self-contained-and-connected --cloning https://github.com/tangxiangru/shlab/
+10761 pts/1    S+     0:00 /usr/lib/git-core/git unpack-objects --pack_header=2,39
+10764 pts/0    R      0:00 /bin/ps a
 tsh> fg %1
 tsh> /bin/ps a
   PID TTY      STAT   TIME COMMAND
-  411 tty1     Ssl+   3:43 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{506fe542-2ac0-4c1b-99d8-174986c6230c} -background none -noreset -displayfd 18 vt1
- 1400 pts/0    Ss     0:02 fish
- 3695 pts/1    Ss+    0:00 fish
-10349 pts/0    S+     0:00 bash ./gather_output.sh
-10424 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace13.txt -s ./tshref -a -p
-10425 pts/0    S+     0:00 ./tshref -p
-10434 pts/0    R      0:00 /bin/ps a
+  407 tty1     Ssl+   3:47 /usr/lib/xorg-server/Xorg -nolisten tcp -auth /var/run/sddm/{ef9bc4af-5a18-431a-beb4-2b7e959a6886} -background none -noreset -displayfd 18 vt1
+ 4934 pts/0    Ss     0:01 fish
+10611 pts/0    S+     0:00 bash ./gather_output.sh
+10691 pts/1    Ss+    0:00 fish
+10750 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t ./trace13.txt -s ./tsh -a -p
+10751 pts/0    S+     0:00 ./tsh -p
+10779 pts/0    R      0:00 /bin/ps a
 #
 # trace14.txt - Simple error handling
 #
 tsh> ./bogus
 ./bogus: Command not found
 tsh> ./myspin 4 &
-[1] (10440) ./myspin 4 &
+[1] (10785) ./myspin 4 &
 tsh> fg
 fg command requires PID or %jobid argument
 tsh> bg
@@ -158,39 +162,39 @@ tsh> bg 9999999
 tsh> fg %2
 %2: No such job
 tsh> fg %1
-Job [1] (10440) stopped by signal 20
+Job [1] (10785) stopped by signal 20
 tsh> bg %2
 %2: No such job
 tsh> bg %1
-[1] (10440) ./myspin 4 &
+[1] (10785) ./myspin 4 &
 tsh> jobs
-[1] (10440) Running ./myspin 4 &
+[1] (10785) Running ./myspin 4 &
 #
 # trace15.txt - Putting it all together
 #
 tsh> ./bogus
 ./bogus: Command not found
 tsh> ./myspin 10
-Job [1] (10463) terminated by signal 2
+Job [1] (10837) terminated by signal 2
 tsh> ./myspin 3 &
-[1] (10465) ./myspin 3 &
+[1] (10840) ./myspin 3 &
 tsh> ./myspin 4 &
-[2] (10467) ./myspin 4 &
+[2] (10842) ./myspin 4 &
 tsh> jobs
-[1] (10465) Running ./myspin 3 &
-[2] (10467) Running ./myspin 4 &
+[1] (10840) Running ./myspin 3 &
+[2] (10842) Running ./myspin 4 &
 tsh> fg %1
-Job [1] (10465) stopped by signal 20
+Job [1] (10840) stopped by signal 20
 tsh> jobs
-[1] (10465) Stopped ./myspin 3 &
-[2] (10467) Running ./myspin 4 &
+[1] (10840) Stopped ./myspin 3 &
+[2] (10842) Running ./myspin 4 &
 tsh> bg %3
 %3: No such job
 tsh> bg %1
-[1] (10465) ./myspin 3 &
+[1] (10840) ./myspin 3 &
 tsh> jobs
-[1] (10465) Running ./myspin 3 &
-[2] (10467) Running ./myspin 4 &
+[1] (10840) Running ./myspin 3 &
+[2] (10842) Running ./myspin 4 &
 tsh> fg %1
 tsh> quit
 #
@@ -198,10 +202,10 @@ tsh> quit
 #     signals that come from other processes instead of the terminal.
 #
 tsh> ./mystop 2
-Job [1] (10494) stopped by signal 20
+Job [1] (10871) stopped by signal 20
 tsh> jobs
-[1] (10494) Stopped ./mystop 2
+[1] (10871) Stopped ./mystop 2
 tsh> ./myint 2
-Job [2] (10497) terminated by signal 2
+Job [2] (10880) terminated by signal 2
 
 
