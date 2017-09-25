@@ -13,3 +13,4 @@ This is my solutions for labs from CSAPP.
 * 2017-07-08 Finished part A of cache lab.
 * 2017-07-20 Finished performance lab.
 * 2017-08-01 Finished shell lab.
+* 2017-09-25 Finished part B of cache lab.

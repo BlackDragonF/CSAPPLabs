@@ -23,6 +23,9 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
     int a, b, c, d;
+    int tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
+    // int tmp, tmp1, tmp2, tmp3;
+    // int h, i, j, k;
     if (M == 32 && N == 32) {
         for (a = 0 ; a < N ; a += 8) {
             for (b = 0 ; b < M ; b += 8) {
@@ -38,27 +41,76 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
         }
     }
     if (M == 64 && N == 64) {
+        // for (a = 0 ; a < N ; a += 8) {
+        //     for (b = 0 ; b < M ; b += 8) {
+        //         for (c = a ; c < a + 4 ; ++c) {
+        //             for (d = b + c - a ; d >= b ; -- d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //             for (d = b + c - a + 1; d < b + 4 ; ++d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //         }
+        //         for (c = a + 4 ; c < a + 8 ; ++c) {
+        //             for (d = b ; d < b + 4 ; ++d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //         }
+        //         for (c = a + 4; c < a + 8 ; ++c) {
+        //             for (d = b + c - a ; d >= b + 4 ; --d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //             for (d = b + c - a + 1 ; d < b + 8 ; ++d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //         }
+        //         for (c = a ; c < a + 4 ; ++c) {
+        //             for (d = b + 4; d < b + 8 ; ++d) {
+        //                 B[c][d] = A[d][c];
+        //             }
+        //         }
+        //     }
+        // }
         for (a = 0 ; a < N ; a += 8) {
             for (b = 0 ; b < M ; b += 8) {
-                for (c = a ; c < a + 4 ; ++c) {
-                    for (d = b ; d < b + 4 ; ++d) {
-                        B[c][d] = A[d][c];
-                    }
+                for (c = b ; c < b + 4 ; ++c) {
+                    tmp0 = A[c][a];
+                    tmp1 = A[c][a + 1];
+                    tmp2 = A[c][a + 2];
+                    tmp3 = A[c][a + 3];
+                    tmp4 = A[c][a + 4];
+                    tmp5 = A[c][a + 5];
+                    tmp6 = A[c][a + 6];
+                    tmp7 = A[c][a + 7];
+                    B[a][c] = tmp0;
+                    B[a + 1][c] = tmp1;
+                    B[a + 2][c] = tmp2;
+                    B[a + 3][c] = tmp3;
+                    B[a][c + 4] = tmp4;
+                    B[a + 1][c + 4] = tmp5;
+                    B[a + 2][c + 4] = tmp6;
+                    B[a + 3][c + 4] = tmp7;
                 }
                 for (c = a + 4 ; c < a + 8 ; ++c) {
-                    for (d = b ; d < b + 4 ; ++d) {
-                        B[c][d] = A[d][c];
-                    }
-                }
-                for (c = a + 4; c < a + 8 ; ++c) {
-                    for (d = b + 4 ; d < b + 8 ; ++d) {
-                        B[c][d] = A[d][c];
-                    }
-                }
-                for (c = a ; c < a + 4 ; ++c) {
-                    for (d = b + 4; d < b + 8 ; ++d) {
-                        B[c][d] = A[d][c];
-                    }
+                    tmp0 = B[c - 4][b + 4];
+                    tmp1 = B[c - 4][b + 5];
+                    tmp2 = B[c - 4][b + 6];
+                    tmp3 = B[c - 4][b + 7];
+
+                    B[c - 4][b + 4] = A[b + 4][c - 4];
+                    B[c - 4][b + 5] = A[b + 5][c - 4];
+                    B[c - 4][b + 6] = A[b + 6][c - 4];
+                    B[c - 4][b + 7] = A[b + 7][c - 4];
+
+                    B[c][b] = tmp0;
+                    B[c][b + 1] = tmp1;
+                    B[c][b + 2] = tmp2;
+                    B[c][b + 3] = tmp3;
+
+                    B[c][b + 4] = A[b + 4][c];
+                    B[c][b + 5] = A[b + 5][c];
+                    B[c][b + 6] = A[b + 6][c];
+                    B[c][b + 7] = A[b + 7][c];
                 }
             }
         }
