@@ -24,8 +24,6 @@ char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
     int a, b, c, d;
     int tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
-    // int tmp, tmp1, tmp2, tmp3;
-    // int h, i, j, k;
     if (M == 32 && N == 32) {
         for (a = 0 ; a < N ; a += 8) {
             for (b = 0 ; b < M ; b += 8) {
@@ -41,8 +39,8 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
         }
     }
     if (M == 64 && N == 64) {
-        // for (a = 0 ; a < N ; a += 8) {
-        //     for (b = 0 ; b < M ; b += 8) {
+        // for (a = 0 ; a < M ; a += 8) {
+        //     for (b = 0 ; b < N ; b += 8) {
         //         for (c = a ; c < a + 4 ; ++c) {
         //             for (d = b + c - a ; d >= b ; -- d) {
         //                 B[c][d] = A[d][c];
@@ -51,11 +49,40 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
         //                 B[c][d] = A[d][c];
         //             }
         //         }
-        //         for (c = a + 4 ; c < a + 8 ; ++c) {
-        //             for (d = b ; d < b + 4 ; ++d) {
-        //                 B[c][d] = A[d][c];
-        //             }
-        //         }
+        //
+        //         tmp0 = A[b][a + 4];
+        //         tmp1 = A[b][a + 5];
+        //         tmp2 = A[b][a + 6];
+        //         tmp3 = A[b][a + 7];
+        //         tmp4 = A[b + 1][a + 4];
+        //         tmp5 = A[b + 1][a + 5];
+        //         tmp6 = A[b + 1][a + 6];
+        //         tmp7 = A[b + 1][a + 7];
+        //         B[a + 4][b] = tmp0;
+        //         B[a + 4][b + 1] = tmp4;
+        //         B[a + 5][b] = tmp1;
+        //         B[a + 5][b + 1] = tmp5;
+        //         tmp0 = A[b + 2][a + 4];
+        //         tmp4 = A[b + 2][a + 5];
+        //         tmp1 = A[b + 3][a + 4];
+        //         tmp5 = A[b + 3][a + 5];
+        //         B[a + 4][b + 2] = tmp0;
+        //         B[a + 4][b + 3] = tmp1;
+        //         B[a + 5][b + 2] = tmp4;
+        //         B[a + 5][b + 3] = tmp5;
+        //         tmp0 = A[b + 2][a + 6];
+        //         tmp4 = A[b + 2][a + 7];
+        //         tmp1 = A[b + 3][a + 6];
+        //         tmp5 = A[b + 3][a + 7];
+        //         B[a + 6][b] = tmp2;
+        //         B[a + 6][b + 1] = tmp6;
+        //         B[a + 6][b + 2] = tmp0;
+        //         B[a + 6][b + 3] = tmp1;
+        //         B[a + 7][b] = tmp3;
+        //         B[a + 7][b + 1] = tmp7;
+        //         B[a + 7][b + 2] = tmp4;
+        //         B[a + 7][b + 3] = tmp5;
+        //
         //         for (c = a + 4; c < a + 8 ; ++c) {
         //             for (d = b + c - a ; d >= b + 4 ; --d) {
         //                 B[c][d] = A[d][c];
@@ -64,11 +91,39 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
         //                 B[c][d] = A[d][c];
         //             }
         //         }
-        //         for (c = a ; c < a + 4 ; ++c) {
-        //             for (d = b + 4; d < b + 8 ; ++d) {
-        //                 B[c][d] = A[d][c];
-        //             }
-        //         }
+        //
+        //         tmp0 = A[b + 6][a];
+        //         tmp1 = A[b + 6][a + 1];
+        //         tmp2 = A[b + 6][a + 2];
+        //         tmp3 = A[b + 6][a + 3];
+        //         tmp4 = A[b + 7][a];
+        //         tmp5 = A[b + 7][a + 1];
+        //         tmp6 = A[b + 7][a + 2];
+        //         tmp7 = A[b + 7][a + 3];
+        //         B[a + 2][b + 6] = tmp2;
+        //         B[a + 2][b + 7] = tmp6;
+        //         B[a + 3][b + 6] = tmp3;
+        //         B[a + 3][b + 7] = tmp7;
+        //         tmp2 = A[b + 4][a + 2];
+        //         tmp3 = A[b + 4][a + 3];
+        //         tmp6 = A[b + 5][a + 2];
+        //         tmp7 = A[b + 5][a + 3];
+        //         B[a + 2][b + 4] = tmp2;
+        //         B[a + 2][b + 5] = tmp6;
+        //         B[a + 3][b + 4] = tmp3;
+        //         B[a + 3][b + 5] = tmp7;
+        //         tmp2 = A[b + 4][a];
+        //         tmp3 = A[b + 4][a + 1];
+        //         tmp6 = A[b + 5][a];
+        //         tmp7 = A[b + 5][a + 1];
+        //         B[a][b + 4] = tmp2;
+        //         B[a][b + 5] = tmp6;
+        //         B[a][b + 6] = tmp0;
+        //         B[a][b + 7] = tmp4;
+        //         B[a + 1][b + 4] = tmp3;
+        //         B[a + 1][b + 5] = tmp7;
+        //         B[a + 1][b + 6] = tmp1;
+        //         B[a + 1][b + 7] = tmp5;
         //     }
         // }
         for (a = 0 ; a < N ; a += 8) {
@@ -125,20 +180,6 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N]) {
                 }
             }
         }
-        // a -= 16;
-        // b -= 16;
-        // for (c = a ; c < N ; ++c) {
-        //     for (d = 0 ; d < b ; ++d) {
-        //         tmp = A[c][d];
-        //         B[d][c] = tmp;
-        //     }
-        // }
-        // for (c = 0 ; c < N ; ++c) {
-        //     for (d = b ; d < M ; ++d) {
-        //         tmp = A[c][d];
-        //         B[d][c] = tmp;
-        //     }
-        // }
     }
 }
 
